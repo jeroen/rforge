@@ -66,9 +66,7 @@ make_repo <- function(project){
     )
     req <- httr::POST("https://api.github.com/user/repos", body = payload, encode = "json", gh())
     httr::stop_for_status(req)
-    req <- httr::GET(sprintf("https://api.github.com/repos/rforge/%s", project), gh())
   }
-  httr::stop_for_status(req)
 }
 
 update_repo <- function(project){
