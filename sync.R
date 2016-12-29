@@ -157,7 +157,22 @@ clean_repos <- function(){
   invisible()
 }
 
+# Extra: gpg mirror
+sync_gpg <- function(){
+  req <- httr::GET("https://api.github.com/orgs/gpg/repos", gh())
+  httr::stop_for_status(req)
+  repos <- httr::content(req, "parsed", simplifyVector = TRUE)$name
+  lapply(sort(repos), function(project){
+    sys("git", c("clone", "--mirror", sprintf("git://git.gnupg.org/%s.git", project)))
+    setwd(paste0(project, ".git"))
+    sys("git", c("remote", "add", "github", sprintf("https://rforge:%s@github.com/gpg/%s.git", github_pat(), project)))
+    sys("git", c("push", "--mirror", "github"))
+    setwd("..")
+    unlink(project, recursive = TRUE)
+  })
+}
+
 ##RUN
 #sync_all()
-sync_active()
-clean_repos()
+#sync_active()
+#clean_repos()
