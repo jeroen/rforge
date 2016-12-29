@@ -30,10 +30,23 @@ find_projects <- function(page){
   rvest::html_attr(links, "href")  
 }
 
+# All projects, including long dead ones
 find_all_projects <- function(){
   pages <- find_pages()
   projects <- lapply(pages, find_projects)
   sort(basename(unlist(projects)))
+}
+
+# Projects with any activity after Sep 15, 2011
+find_maintained_projects <- function(){
+  projects <- find_projects('http://r-forge.r-project.org/top/mostactive.php')
+  sort(basename(unlist(projects)))  
+}
+
+# Projects with activity in the past week
+find_active_projects <- function(){
+  projects <- find_projects('http://r-forge.r-project.org/top/mostactive.php?type=week')
+  sort(basename(projects))
 }
 
 gh <- function(){
@@ -58,7 +71,7 @@ make_repo <- function(project){
   httr::stop_for_status(req)
 }
 
-sync_repo <- function(project){
+update_repo <- function(project){
   #Sys.setenv(GIT_SSH_COMMAND = "ssh -oStrictHostKeyChecking=no -i ~/rforge/rforge.key")
   olddir <- getwd()
   on.exit(setwd(olddir))
@@ -70,16 +83,15 @@ sync_repo <- function(project){
   unlink(project, recursive = TRUE)
 }
 
-sync_all <- function(){
+sync_repos <- function(repos){
   logfile <- file("sync.log", open = "at")
   on.exit(close(logfile))
-  writeLines(sprintf("START FULL SYNC AT: %s", as.character(Sys.time())), con = logfile)
+  writeLines(sprintf("START SYNC OF %d AT: %s", length(repos), as.character(Sys.time())), con = logfile)
   setwd(tempdir())
-  repos <- find_all_projects()
   lapply(repos, function(project){
     out <- try({
       make_repo(project);
-      sync_repo(project);
+      update_repo(project);
     })
     if(inherits(out, "try-error")){
       writeLines(sprintf("error: %s - %s", project, as.character(out)), con = logfile)
@@ -89,6 +101,16 @@ sync_all <- function(){
     flush(logfile)
   })
   writeLines(sprintf("DONE AT: %s", as.character(Sys.time())), con = logfile)
+}
+
+sync_all <- function(){
+  repos <- find_maintained_projects()
+  sync_repos(repos)
+}
+
+sync_active <- function(){
+  repos <- find_active_projects()
+  sync_repos(repos)
 }
 
 ## Cleaning old repos
@@ -125,5 +147,6 @@ clean_repos <- function(){
 }
 
 ##RUN
-sync_all()
+#sync_all()
+sync_active()
 clean_repos()

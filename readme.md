@@ -22,7 +22,15 @@ Installing packages:
 install.packages("rvest")
 ```
 
-Finally set a Github PAT for user `rforge` in the first line of the script.
+## How to use
+
+Set a Github PAT for user `rforge` in the first line of the script. Three functions:
+
+ - `sync_all()` updates all repositories (except for the ones dead for 5+ years)
+ - `sync_active()` updates repositories activity in the past week
+ - `clean_repos()` deletes repos from Github that are no longer on rforge
+ 
+Best is a daily CRON job with the latter two I think.
 
 ## To do
 
@@ -32,4 +40,6 @@ The current script deletes the repo after each sync because I ran out of disk sp
 git svn rebase 
 git push origin master
 ```
+
+Then again not sure I care enough.
 
