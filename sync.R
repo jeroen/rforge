@@ -102,8 +102,8 @@ sync_repos <- function(repos){
     }
     flush(logfile)
   })
-  cat(sprintf("DONE!\n SUCCESS: %s\n FAILED:%s\n\n"), 
-      paste(done_ok, collapse = ", "), paste(done_fail, collapse = ", "))
+  cat(sprintf("DONE!\n SUCCESS: %s\n FAILED:%s\n\n", 
+      paste(done_ok, collapse = ", "), paste(done_fail, collapse = ", ")))
   writeLines(sprintf("DONE AT: %s", as.character(Sys.time())), con = logfile)
 }
 
@@ -119,7 +119,10 @@ sync_active <- function(){
 
 sync_retry <- function(){
   lines <- grep("error:", readLines("sync.log"), value = TRUE)
-  repos <- sort(unique(substring(sapply(strsplit(lines, " -"), `[[`, 1), 8)))
+  repos_error <- sort(unique(substring(sapply(strsplit(lines, " -"), `[[`, 1), 8)))
+  lines <- grep("success:", readLines("sync.log"), value = TRUE)
+  repos_success <- sort(unique(substring(sapply(strsplit(lines, " -"), `[[`, 1), 10)))
+  repos <- repos_error[!(repos_error %in% repos_success)]
   sync_repos(repos)
 }
 
