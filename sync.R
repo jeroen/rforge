@@ -1,5 +1,5 @@
 # sudo apt-get install subversion git-svn curl
-Sys.setenv(GITHUB_PAT = "xxxxxxxxxxxxxxxxx")
+Sys.setenv(GITHUB_PAT = readLines('token.txt'))
 
 # For scraping repositories
 # library(rvest)
@@ -82,6 +82,8 @@ update_repo <- function(project){
 }
 
 sync_repos <- function(repos){
+  done_ok <- character()
+  done_fail <- character()
   logfile <- file("sync.log", open = "at")
   on.exit(close(logfile))
   writeLines(sprintf("START SYNC OF %d AT: %s", length(repos), as.character(Sys.time())), con = logfile)
@@ -92,12 +94,16 @@ sync_repos <- function(repos){
       update_repo(project);
     })
     if(inherits(out, "try-error")){
+      done_fail <<- c(done_fail, project)
       writeLines(sprintf("error: %s - %s", project, as.character(out)), con = logfile)
     } else {
+      done_ok <<- c(done_ok, project)
       writeLines(sprintf("success: %s", project), con = logfile)
     }
     flush(logfile)
   })
+  cat(sprintf("DONE!\n SUCCESS: %s\n FAILED:%s\n\n"), 
+      paste(done_ok, collapse = ", "), paste(done_fail, collapse = ", "))
   writeLines(sprintf("DONE AT: %s", as.character(Sys.time())), con = logfile)
 }
 
@@ -108,6 +114,12 @@ sync_all <- function(){
 
 sync_active <- function(){
   repos <- find_active_projects()
+  sync_repos(repos)
+}
+
+sync_retry <- function(){
+  lines <- grep("error:", readLines("sync.log"), value = TRUE)
+  repos <- sort(unique(substring(sapply(strsplit(lines, " -"), `[[`, 1), 8)))
   sync_repos(repos)
 }
 
@@ -142,6 +154,7 @@ clean_repos <- function(){
       cat(sprintf("OK: %s\n", project))
     }
   })
+  invisible()
 }
 
 ##RUN
