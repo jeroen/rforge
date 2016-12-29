@@ -91,5 +91,38 @@ sync_all <- function(){
   writeLines(sprintf("DONE AT: %s", as.character(Sys.time())), con = logfile)
 }
 
+## Cleaning old repos
+list_repos <- function(){
+  req <- httr::GET("https://api.github.com/users/rforge", gh())
+  httr::stop_for_status(req)
+  total <- httr::content(req, "parsed")$public_repos
+  pages <- ceiling(total / 100)
+  repos <- character()
+  for(i in seq_len(pages)){
+    req <- httr::GET(paste0("https://api.github.com/user/repos?per_page=100&page=", i), gh())
+    httr::stop_for_status(req)
+    data <- httr::content(req, "parsed", simplifyVector = TRUE)
+    repos <- c(repos, data$name)
+    cat("success at page", i, "\n")
+  }
+  sort(repos)
+}
+
+clean_repos <- function(){
+  lapply(list_repos(), function(project){
+    req <- httr::GET(sprintf("https://r-forge.r-project.org/projects/%s/", project))
+    httr::stop_for_status(req)
+    text <- httr::content(req, "text")
+    if(grepl("Permission denied. No project was chosen", text)){
+      req <- httr::DELETE(sprintf("https://api.github.com/repos/rforge/%s", project), gh())
+      httr::stop_for_status(req)
+      cat(sprintf("DELETED: %s\n", project))
+    } else {
+      cat(sprintf("OK: %s\n", project))
+    }
+  })
+}
+
 ##RUN
 sync_all()
+clean_repos()
