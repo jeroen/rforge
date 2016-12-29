@@ -102,7 +102,8 @@ list_repos <- function(){
     req <- httr::GET(paste0("https://api.github.com/user/repos?per_page=100&page=", i), gh())
     httr::stop_for_status(req)
     data <- httr::content(req, "parsed", simplifyVector = TRUE)
-    repos <- c(repos, data$name)
+    names <- gsub("rforge/", "", grep("rforge/", data$full_name, value = TRUE))
+    repos <- c(repos, names)
     cat("success at page", i, "\n")
   }
   sort(repos)
