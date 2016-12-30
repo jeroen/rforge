@@ -1,7 +1,19 @@
 # sudo apt-get install subversion git-svn curl
 Sys.setenv(GITHUB_PAT = readLines('token.txt'))
 
-blacklist <- c("hyperspec")
+# These fail for whatever reason. 
+# Usually either disabled on r-forge or has files bigger than 100MB
+blacklist <- 
+  c("adrminer", "arules", "bayessdeevol", "bbmm-analysis", "biocep-distrib",
+  "casper", "dcgor", "dnet", "dtrees2", "dtw", "estimators4nfi",
+  "flr", "fpt", "fxregime", "gamboostlss", "genabel", "gsdesign",
+  "gsif", "gsmoothr", "gwidgets", "hmmr", "htda", "ihelp", "ipeglim",
+  "jmr", "laicpms", "metasem", "mmsa", "morgan-rtools", "mpdir",
+  "msgl", "multivarseg", "nem", "neuroim", "oem", "omearalab",
+  "open-tfdea", "optbiomarker", "patchwork", "pmoments", "polyploid",
+  "ptauxpc", "rftestproject12", "r-survey", "seqinr", "sprint",
+  "teatime", "toxcast", "trajectory-sim", "treevo", "tuner", "waveslim",
+  "wavetiling", "hyperspec")
 
 # For scraping repositories
 # library(rvest)
