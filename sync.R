@@ -1,6 +1,8 @@
 # sudo apt-get install subversion git-svn curl
 Sys.setenv(GITHUB_PAT = readLines('token.txt'))
 
+blacklist <- c("hyperspec")
+
 # For scraping repositories
 # library(rvest)
 
@@ -82,6 +84,7 @@ update_repo <- function(project){
 }
 
 sync_repos <- function(repos){
+  repos <- repos[!(repos %in% blacklist)]
   done_ok <- character()
   done_fail <- character()
   logfile <- file("sync.log", open = "at")
