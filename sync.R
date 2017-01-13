@@ -192,7 +192,7 @@ sync_gpg <- function(){
 
 ##RUN
 setwd(tempdir())
-sycn_gpg()
+sync_gpg()
 sync_active()
 #sync_all()
 #clean_repos()
