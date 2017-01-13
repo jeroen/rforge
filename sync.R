@@ -99,7 +99,7 @@ sync_repos <- function(repos){
   repos <- repos[!(repos %in% blacklist)]
   done_ok <- character()
   done_fail <- character()
-  logfile <- file("sync.log", open = "at")
+  logfile <- file(sprintf("/home/jeroen/rforge/sync-%s.log", as.character(Sys.Date())), open = "at")
   on.exit(close(logfile))
   writeLines(sprintf("START SYNC OF %d AT: %s", length(repos), as.character(Sys.time())), con = logfile)
   lapply(repos, function(project){
