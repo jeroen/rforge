@@ -192,6 +192,7 @@ sync_gpg <- function(){
 }
 
 ##RUN
+sycn_gpg()
+sync_active()
 #sync_all()
-#sync_active()
 #clean_repos()
