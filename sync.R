@@ -102,7 +102,6 @@ sync_repos <- function(repos){
   logfile <- file("sync.log", open = "at")
   on.exit(close(logfile))
   writeLines(sprintf("START SYNC OF %d AT: %s", length(repos), as.character(Sys.time())), con = logfile)
-  setwd(tempdir())
   lapply(repos, function(project){
     out <- try({
       make_repo(project);
@@ -192,6 +191,7 @@ sync_gpg <- function(){
 }
 
 ##RUN
+setwd(tempdir())
 sycn_gpg()
 sync_active()
 #sync_all()
