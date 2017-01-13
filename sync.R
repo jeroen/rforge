@@ -182,11 +182,12 @@ sync_gpg <- function(){
   repos <- httr::content(req, "parsed", simplifyVector = TRUE)$name
   lapply(sort(repos), function(project){
     sys("git", c("clone", "--mirror", sprintf("git://git.gnupg.org/%s.git", project)))
-    setwd(paste0(project, ".git"))
+    dirname <- paste0(project, ".git")
+    setwd(dirname)
     sys("git", c("remote", "add", "github", sprintf("https://rforge:%s@github.com/gpg/%s.git", github_pat(), project)))
     sys("git", c("push", "--mirror", "github"))
     setwd("..")
-    unlink(project, recursive = TRUE)
+    unlink(dirname, recursive = TRUE)
   })
 }
 
