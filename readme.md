@@ -22,6 +22,12 @@ Installing packages:
 install.packages("rvest")
 ```
 
+Copy the GITHUB_PAT key in `token.txt`. The CRON job looks like this:
+
+```
+0 2 * * * /home/jeroen/rforge/job.sh
+```
+
 ## How to use
 
 Set a Github PAT for user `rforge` in the first line of the script. Three functions:
