@@ -1,5 +1,5 @@
 # sudo apt-get install subversion git-svn curl
-Sys.setenv(GITHUB_PAT = readLines('token.txt'))
+Sys.setenv(GITHUB_PAT = readLines('token.txt')[1])
 
 # These fail for whatever reason. 
 # Usually either disabled on r-forge or has files bigger than 100MB
